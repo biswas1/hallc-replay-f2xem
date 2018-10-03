@@ -37,7 +37,7 @@ pntracks_max_fp = 10
 
 ; Crude track selection criteria in h_physics
 ; psel_chi2_fpperdegmax   maximum chi2 per degree of freedom for track
-  psel_chi2_fpperdegmax = 2000000.
+  psel_chi2_fpperdegmax =200
 ; psel_dedx1min           minimum dedx to chose best track in scin 1
   psel_dedx1min = -100000
 ; psel_dedx1max           maximum dedx to chose best track in scin 1
