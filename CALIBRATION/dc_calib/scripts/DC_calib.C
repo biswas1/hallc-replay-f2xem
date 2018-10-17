@@ -379,7 +379,8 @@ void DC_calib::GetDCLeafs()
   if (spec=="SHMS")
     {
       cal_etot_leaf = "P.cal.etot";
-      cer_npe_leaf = "P.ngcer.npeSum";  
+      cer_npe_leaf = "P.ngcer.npeSum"; 
+      delta_leaf = "P.gtr.dp";
     
       //Check Branch Status 
       status_cal = tree->GetBranchStatus(cal_etot_leaf);  //returns a boolean
@@ -409,7 +410,8 @@ void DC_calib::GetDCLeafs()
       else
 	{
 	  tree->SetBranchAddress(cal_etot_leaf, &cal_etot);
-	  tree->SetBranchAddress(cer_npe_leaf, &cer_npe);   
+	  tree->SetBranchAddress(cer_npe_leaf, &cer_npe);  
+	  tree->SetBranchAddress(delta_leaf, &delta);
 	}
 	
     }
@@ -418,11 +420,13 @@ void DC_calib::GetDCLeafs()
     {
       cal_etot_leaf = "H.cal.etot";
       cer_npe_leaf = "H.cer.npeSum";  
+      delta_leaf = "H.gtr.dp";
      
 
       //Check Branch Status with Boolean
       status_cal = tree->GetBranchStatus(cal_etot_leaf);
       status_cer = tree->GetBranchStatus(cer_npe_leaf); 
+      // status_delt = tree->GetBranchStatus(delta);
 
       if ((!status_cal || !status_cer ) && (pid=="pid_elec"))
 	{
@@ -446,7 +450,8 @@ void DC_calib::GetDCLeafs()
       else
 	{
 	  tree->SetBranchAddress(cal_etot_leaf, &cal_etot);
-	  tree->SetBranchAddress(cer_npe_leaf, &cer_npe);   
+	  tree->SetBranchAddress(cer_npe_leaf, &cer_npe); 
+	  tree->SetBranchAddress(delta_leaf, &delta);
 	}
  
       
@@ -924,9 +929,12 @@ void DC_calib::EventLoop(string option="")
       //PID Cut, Set Bool_t to actual leaf value, and see if it passes cut
       else if (pid=="pid_elec")
 	{
-	  cal_elec = cal_etot>0.1;  //normalize energy > 0.1 (bkg cleanup)
-	  cer_elec = cer_npe>1.0;     //number of photoelec. > 1 (electrons)
-	  
+	  cal_elec = cal_etot>0.8;  //normalize energy > 0.1 (bkg cleanup)
+	  cer_elec = cer_npe>2.0;     //number of photoelec. > 1 (electrons)
+	  if  (spec == "SHMS")
+	    del = delta>-12. &&delta<24.; //delta acceptance
+	  else
+	    del = delta>-10. &&delta<10.;
 	}
       
       else 
@@ -979,7 +987,7 @@ void DC_calib::EventLoop(string option="")
 	    {
 	      // cout << "PLANE: " << ip << endl;
 
-   	  if (good_event&&ndata_time[ip]==1)
+   	  if (good_event && ndata_time[ip]==1)
         	{
 		
 	      
